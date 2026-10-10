@@ -1,7 +1,4 @@
-"""
-Fungsi bantu tampilan (console) yang dipakai oleh semua view.
-View tidak boleh mengakses database; hanya menampilkan data dan mengambil input.
-"""
+
 from datetime import datetime
 
 LEBAR = 70
