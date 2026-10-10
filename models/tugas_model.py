@@ -8,7 +8,7 @@ class TugasModel:
 
     def get_all(self):
         query = f"""
-            SELECT t.id_tugas, pr.nama_praktikum, pe.pertemuan_ke, t.nama_tugas, t.deadline
+            SELECT t.id_tugas, t.id_pertemuan, pr.nama_praktikum, pe.pertemuan_ke, t.nama_tugas, t.deadline
             FROM {self.table_name} t
             JOIN pertemuan pe ON t.id_pertemuan = pe.id_pertemuan
             JOIN praktikum pr ON pe.id_praktikum = pr.id_praktikum
