@@ -46,6 +46,7 @@ class DaftarView(ctk.CTkFrame):
         sb_y = ttk.Scrollbar(wadah, orient="vertical", command=self.tabel.yview)
         sb_x = ttk.Scrollbar(wadah, orient="horizontal", command=self.tabel.xview)
         self.tabel.configure(yscrollcommand=sb_y.set, xscrollcommand=sb_x.set)
+        self.tabel.bind("<Configure>", self._sesuaikan_lebar)  # tabel memenuhi panel
         self.tabel.grid(row=0, column=0, sticky="nsew")
         sb_y.grid(row=0, column=1, sticky="ns")
         sb_x.grid(row=1, column=0, sticky="ew")
@@ -70,6 +71,17 @@ class DaftarView(ctk.CTkFrame):
         self.atur_modul(kunci)
         if self._on_ganti_modul:
             self._on_ganti_modul(kunci)
+
+    def _sesuaikan_lebar(self, _event=None):
+        """Lebarkan kolom secara proporsional agar tabel memenuhi panel."""
+        kolom = MODUL[self.modul]["kolom"]
+        tersedia = self.tabel.winfo_width()
+        dasar = sum(w for _k, _h, w in kolom)
+        if tersedia <= 1:
+            return
+        skala = max(1.0, (tersedia - 4) / dasar)   # hanya melebar, tidak menyusut
+        for k, _h, w in kolom:
+            self.tabel.column(k, width=int(w * skala))
 
     def _isi_tabel(self):
         """Tampilkan _semua ke tabel, disaring oleh kata kunci pencarian (hanya tampilan)."""
@@ -100,6 +112,7 @@ class DaftarView(ctk.CTkFrame):
                               anchor="center" if k.startswith("id_") or w <= 90 else "w")
         self.entry_cari.delete(0, "end")
         self.tampilkan_data([])
+        self.after(20, self._sesuaikan_lebar)
 
     def tampilkan_data(self, daftar):
         """Menampilkan list of dict (hasil model.get_all()) ke tabel."""
