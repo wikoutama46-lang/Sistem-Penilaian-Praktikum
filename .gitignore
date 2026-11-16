@@ -1,0 +1,17 @@
+# Virtual environment
+env/
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Hasil pemaketan PyInstaller
+build/
+dist/
+*.spec
+
+# Hasil pengujian
+.pytest_cache/
+.coverage
+htmlcov/
