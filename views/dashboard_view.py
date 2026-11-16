@@ -29,10 +29,13 @@ class DashboardView(ctk.CTkFrame):
             area.grid_columnconfigure(k, weight=1, uniform="kartu")
 
         self.lbl_jumlah = {}
+        self.kartu = {}
+        self.btn_tambah = {}
         for i, kunci in enumerate(URUTAN):
             kartu = t.panel(area)
             kartu.grid(row=i // KOLOM_KARTU, column=i % KOLOM_KARTU,
                        padx=5, pady=5, sticky="nsew")
+            self.kartu[kunci] = kartu
             kartu.grid_columnconfigure((0, 1), weight=1)
 
             t.teks(kartu, MODUL[kunci]["judul"], sekunder=True, tebal=True).grid(
@@ -44,15 +47,26 @@ class DashboardView(ctk.CTkFrame):
             t.tombol(kartu, "Daftar", "utama", height=28,
                      command=lambda k=kunci: on_daftar and on_daftar(k)).grid(
                 row=2, column=0, padx=(15, 4), pady=(0, 12), sticky="ew")
-            t.tombol(kartu, "Tambah", "kedua", height=28,
-                     command=lambda k=kunci: on_tambah and on_tambah(k)).grid(
-                row=2, column=1, padx=(4, 15), pady=(0, 12), sticky="ew")
+            btn = t.tombol(kartu, "Tambah", "kedua", height=28,
+                           command=lambda k=kunci: on_tambah and on_tambah(k))
+            btn.grid(row=2, column=1, padx=(4, 15), pady=(0, 12), sticky="ew")
+            self.btn_tambah[kunci] = btn
 
     # ===== Method bantu untuk Controller (tanpa logika bisnis) =====
     def tampilkan_ringkasan(self, jumlah):
         """jumlah: dict {kunci_modul: banyak_data}, contoh {"mahasiswa": 12}."""
         for kunci, lbl in self.lbl_jumlah.items():
             lbl.configure(text=str(jumlah.get(kunci, 0)))
+
+    def atur_akses(self, boleh_lihat, boleh_tambah):
+        """Tampilkan hanya kartu modul yang boleh dilihat; tombol Tambah mengikuti hak tambah."""
+        for kartu in self.kartu.values():
+            kartu.grid_remove()
+        for i, kunci in enumerate(k for k in URUTAN if k in boleh_lihat):
+            self.kartu[kunci].grid(row=i // KOLOM_KARTU, column=i % KOLOM_KARTU,
+                                   padx=5, pady=5, sticky="nsew")
+            self.btn_tambah[kunci].configure(
+                state="normal" if kunci in boleh_tambah else "disabled")
 
     def set_pengguna(self, nama):
         self.lbl_sapaan.configure(

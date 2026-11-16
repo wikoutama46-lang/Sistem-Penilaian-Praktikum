@@ -23,7 +23,10 @@ class LoginView(ctk.CTkFrame):
         self.entry_password.pack(pady=6, padx=30)
 
         self.btn_masuk = t.tombol(self.panel, "Masuk", "utama", width=280)
-        self.btn_masuk.pack(pady=(18, 28), padx=30)
+        self.btn_masuk.pack(pady=(18, 6), padx=30)
+
+        self.btn_daftar = t.tombol(self.panel, "Belum punya akun? Daftar", "garis", width=280)
+        self.btn_daftar.pack(pady=(0, 28), padx=30)
 
         # Enter pada kolom isian sama dengan menekan tombol Masuk
         for kolom in (self.entry_username, self.entry_password):

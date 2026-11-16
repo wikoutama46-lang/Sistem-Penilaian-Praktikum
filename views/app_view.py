@@ -14,6 +14,7 @@ from views.dashboard_view import DashboardView
 from views.daftar_view import DaftarView
 from views.form_view import FormView
 from views.login_view import LoginView
+from views.register_view import RegisterView
 from views.modul import MODUL, URUTAN
 
 
@@ -29,17 +30,20 @@ class AplikasiView(ctk.CTk):
 
         self.modul_aktif = URUTAN[0]
         self.on_modul_berubah = None   # diisi Controller: fungsi(kunci_modul) untuk memuat data
+        self.izin = None               # diisi Controller: fungsi(aksi, kunci_modul) -> bool
+        self.on_keluar = None          # diisi Controller: dipanggil saat tombol Keluar ditekan
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)
 
         self.navbar = self._buat_navbar()
         self.login = LoginView(self)
+        self.register = RegisterView(self)
         self.dashboard = DashboardView(self, on_daftar=self.buka_daftar, on_tambah=self.buka_form)
         self.form = FormView(self, on_ganti_modul=self._modul_diganti_form,
                              on_lihat_daftar=lambda: self.buka_daftar(self.form.modul))
         self.daftar = DaftarView(self, on_ganti_modul=self._modul_diganti_daftar)
-        self._halaman = {"login": self.login, "dashboard": self.dashboard,
+        self._halaman = {"login": self.login, "register": self.register, "dashboard": self.dashboard,
                          "form": self.form, "daftar": self.daftar}
 
         self._pasang_perintah_awal()
@@ -63,28 +67,41 @@ class AplikasiView(ctk.CTk):
     def tampilkan(self, nama):
         for halaman in self._halaman.values():
             halaman.grid_remove()
-        if nama == "login":
+        if nama in ("login", "register"):
             self.navbar.grid_remove()
         else:
             self.navbar.grid(row=0, column=0, sticky="ew")
         self._halaman[nama].grid(row=1, column=0, sticky="nsew")
         if nama == "login":
             self.login.fokus()
+        elif nama == "register":
+            self.register.fokus()
 
     # ---------- navigasi (hanya urusan tampilan) ----------
     def buka_daftar(self, kunci=None):
-        self.modul_aktif = kunci or self.modul_aktif
+        kunci = kunci or self.modul_aktif
+        if self.izin and not self.izin("lihat", kunci):
+            t.pesan_error("Peran Anda tidak memiliki izin untuk melihat data ini.")
+            return
+        self.modul_aktif = kunci
         self.daftar.atur_modul(self.modul_aktif)
         self._muat(self.modul_aktif)
         self.tampilkan("daftar")
 
     def buka_form(self, kunci=None, data=None):
         """data=None -> mode tambah; data=dict baris -> mode ubah."""
-        self.modul_aktif = kunci or self.modul_aktif
+        kunci = kunci or self.modul_aktif
+        aksi = "tambah" if data is None else "ubah"
+        if self.izin and not self.izin(aksi, kunci):
+            t.pesan_error("Peran Anda tidak memiliki izin untuk aksi ini.")
+            return
+        self.modul_aktif = kunci
         self.form.atur_modul(self.modul_aktif, data)
         self.tampilkan("form")
 
     def keluar(self):
+        if self.on_keluar:
+            self.on_keluar()
         self.login.kosongkan_form()
         self.tampilkan("login")
 
@@ -102,6 +119,8 @@ class AplikasiView(ctk.CTk):
     # ---------- perintah sementara (diganti Controller nanti) ----------
     def _pasang_perintah_awal(self):
         self.login.btn_masuk.configure(command=self._masuk_sementara)
+        self.login.btn_daftar.configure(command=lambda: self.tampilkan("register"))
+        self.register.btn_kembali.configure(command=lambda: self.tampilkan("login"))
         self.form.btn_simpan.configure(command=lambda: self._simpan_sementara("Simpan"))
         self.form.btn_update.configure(command=lambda: self._simpan_sementara("Perbarui"))
         self.form.btn_hapus.configure(command=lambda: self._hapus_sementara(self.form))

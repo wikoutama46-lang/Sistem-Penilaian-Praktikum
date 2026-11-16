@@ -55,4 +55,4 @@ class LaporanController:
             return hasil(False, "ID harus berupa angka.")
         aff = self.model.delete(id_)
         return hasil_eksekusi(self.model, aff, "Data laporan berhasil dihapus.",
-                              "Data tidak ditemukan.")
+                            "Data tidak ditemukan.")

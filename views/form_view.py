@@ -12,6 +12,7 @@ class FormView(ctk.CTkFrame):
         self.modul = URUTAN[0]
         self._id_data = None          # ID baris yang sedang diubah (None = mode tambah)
         self.entri = {}               # {kunci_field: CTkEntry}
+        self.setelah_bangun = None    # diisi Controller: fungsi(form) dipanggil setelah form dibangun
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
@@ -100,6 +101,23 @@ class FormView(ctk.CTkFrame):
             self._id_data = data.get(MODUL[kunci]["id"])
             self.isi_form(data)
         self._atur_mode()
+        if self.setelah_bangun:
+            self.setelah_bangun(self)
+
+    def batasi_modul(self, daftar_kunci):
+        """Batasi pilihan modul pada menu (sesuai hak akses)."""
+        self.pilih_modul.configure(values=[MODUL[k]["judul"] for k in daftar_kunci])
+
+    def kunci_field(self, kunci, nilai=""):
+        """Isi field lalu kunci (tidak bisa diedit). Dipakai untuk data yang ditentukan sistem."""
+        kolom = self.entri.get(kunci)
+        if kolom is None:
+            return
+        kolom.configure(state="normal")
+        kolom.delete(0, "end")
+        if nilai not in (None, ""):
+            kolom.insert(0, str(nilai))
+        kolom.configure(state="disabled")
 
     def ambil_input(self):
         """Isi form sebagai dict {kunci_field: teks}."""

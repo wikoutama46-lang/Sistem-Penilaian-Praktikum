@@ -99,6 +99,10 @@ class DaftarView(ctk.CTkFrame):
         self.lbl_total.configure(text=f"Total: {len(self._baris)} data")
 
     # ===== Method bantu untuk Controller (tanpa logika bisnis) =====
+    def batasi_modul(self, daftar_kunci):
+        """Batasi pilihan modul pada menu (sesuai hak akses)."""
+        self.pilih_modul.configure(values=[MODUL[k]["judul"] for k in daftar_kunci])
+
     def atur_modul(self, kunci):
         """Ganti modul: kolom tabel disesuaikan, data dikosongkan sampai Controller mengisi."""
         self.modul = kunci
