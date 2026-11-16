@@ -1,9 +1,4 @@
-# Dependensi runtime (versi sesuai virtual environment proyek)
-mysql-connector-python==26.10.0
 customtkinter==6.0.0
 darkdetect==0.8.0
+mysql-connector-python==26.10.0
 packaging==26.3
-
-# Pengujian (dipakai pytest -v dan GitHub Actions)
-pytest>=8.0
-pytest-cov>=5.0
