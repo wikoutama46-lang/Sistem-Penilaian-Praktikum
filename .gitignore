@@ -9,7 +9,6 @@ __pycache__/
 # Hasil pemaketan PyInstaller
 build/
 dist/
-*.spec
 
 # Hasil pengujian
 .pytest_cache/
