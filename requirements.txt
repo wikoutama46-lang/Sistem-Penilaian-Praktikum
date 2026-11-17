@@ -2,3 +2,5 @@ customtkinter==6.0.0
 darkdetect==0.8.0
 mysql-connector-python==26.10.0
 packaging==26.3
+pytest>=8.0
+pytest-cov>=5.0
