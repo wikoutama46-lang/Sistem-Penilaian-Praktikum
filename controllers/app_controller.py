@@ -10,6 +10,7 @@ from controllers.mahasiswa_controller import MahasiswaController
 from controllers.nilai_controller import NilaiController
 from controllers.pertemuan_controller import PertemuanController
 from controllers.praktikum_controller import PraktikumController
+from controllers.statistik import hitung_statistik
 from controllers.tugas_controller import TugasController
 from views.modul import URUTAN
 
@@ -118,8 +119,11 @@ class AplikasiController:
             tombol.configure(state="normal" if self.boleh(aksi, kunci) else "disabled")
 
     def _segarkan_dashboard(self):
-        self.app.dashboard.tampilkan_ringkasan(
-            {k: len(self._ambil_data(k)) for k in URUTAN})
+        """Isi kartu ringkasan dan grafik dari data yang boleh dilihat peran saat ini."""
+        data = {k: self._ambil_data(k) for k in URUTAN}
+        dashboard = self.app.dashboard
+        dashboard.tampilkan_ringkasan({k: len(v) for k, v in data.items()})
+        dashboard.tampilkan_grafik(hitung_statistik(data))
 
     # ---------- form ----------
     def _sesuaikan_form(self, form):

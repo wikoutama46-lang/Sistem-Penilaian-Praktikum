@@ -41,9 +41,24 @@ Tampilan tersedia dalam dua bentuk:
 - Pendaftaran Asisten Dosen dan Dosen memerlukan kode registrasi.
 - Hak akses per aktor dicek di Controller, jadi tetap berlaku walaupun tampilan berubah.
 - CRUD untuk enam modul: mahasiswa, praktikum, pertemuan, tugas, laporan, dan nilai.
-- Dashboard ringkasan jumlah data tiap modul.
+- Dashboard dengan ringkasan jumlah data dan delapan grafik beranimasi (donat, kolom, batang, gauge, dan garis). Grafik menyesuaikan hak akses: tiap peran hanya melihat grafik dari data yang boleh dilihatnya.
 - Mahasiswa hanya melihat laporan dan nilai miliknya sendiri.
 - Animasi pembuka (splash) dan ikon logo pada aplikasi `.exe`.
+
+## Grafik Dashboard
+
+| Grafik | Jenis | Sumber data | Peran yang melihat |
+|---|---|---|---|
+| Mahasiswa per Kelas | Donat | Mahasiswa | Asisten Dosen |
+| Ketuntasan Nilai | Gauge | Nilai | Semua |
+| Distribusi Nilai Akhir | Kolom | Nilai | Semua |
+| Rata-rata Nilai per Praktikum | Batang | Nilai | Semua |
+| Status Penilaian Laporan | Donat | Laporan | Semua |
+| Peringkat Mahasiswa | Batang berperingkat | Nilai | Semua (Mahasiswa hanya data miliknya) |
+| Pertemuan dan Tugas per Praktikum | Kolom ganda | Pertemuan, Tugas | Asisten Dosen, Mahasiswa (hanya tugas) |
+| Jadwal Pertemuan per Bulan | Garis | Pertemuan | Asisten Dosen |
+
+Grafik digambar dengan tkinter Canvas, jadi tidak memerlukan matplotlib. Arahkan kursor ke batang, irisan, atau titik untuk melihat angka rinci. Angka dihitung di `controllers/statistik.py`. Nilai tuntas minimal 60, dan grade A (85 ke atas), B (70), C (60), D (50), E (di bawah 50) dapat diubah di berkas yang sama.
 
 ## Hak Akses
 
@@ -104,16 +119,18 @@ Sistem-Penilaian-Praktikum/
 │   ├── auth_controller.py  # login dan pendaftaran akun
 │   ├── hak_akses.py        # aturan hak akses per aktor
 │   ├── base_controller.py
+│   ├── statistik.py        # perhitungan data grafik Dashboard
 │   └── <modul>_controller.py   # satu file per modul
 │
 ├── views/                  # tampilan GUI (customtkinter)
 │   ├── splash_view.py      # animasi pembuka
 │   ├── tema.py             # warna, font, dan komponen bersama
+│   ├── grafik.py           # pustaka grafik (Canvas): donat, kolom, batang, gauge, garis
 │   ├── modul.py            # konfigurasi field dan kolom tiap modul
 │   ├── app_view.py         # jendela utama dan navigasi antarhalaman
 │   ├── login_view.py       # halaman Login
 │   ├── register_view.py    # halaman Daftar Akun
-│   ├── dashboard_view.py   # halaman Dashboard
+│   ├── dashboard_view.py   # halaman Dashboard (kartu ringkasan dan grafik)
 │   ├── form_view.py        # halaman Form (tambah/ubah data)
 │   └── daftar_view.py      # halaman Daftar Data
 │
@@ -126,7 +143,8 @@ Sistem-Penilaian-Praktikum/
 │   └── auth.sql            # tabel users untuk login
 │
 ├── tests/
-│   └── test_auth.py        # unit test autentikasi dan hak akses (tanpa MySQL)
+│   ├── test_auth.py        # unit test autentikasi dan hak akses (tanpa MySQL)
+│   └── test_statistik.py   # unit test perhitungan statistik grafik (tanpa MySQL)
 │
 ├── assets/                 # logo, ikon .exe, dan gambar splash
 ├── tools/
@@ -169,7 +187,7 @@ Buka terminal baru setelah menjalankan `setx` agar nilainya terbaca.
 
 | Perintah | Fungsi |
 |---|---|
-| `python demo_gui.py` | Melihat tampilan GUI dengan data contoh. Login dengan username dan password apa saja |
+| `python demo_gui.py` | Melihat tampilan GUI dan grafik dengan data contoh. Login dengan username dan password apa saja |
 | `python demo_cli.py` | Melihat tampilan CLI dengan data contoh |
 | `python test_model.py` | Menguji koneksi dan CRUD pada model (butuh MySQL aktif) |
 
